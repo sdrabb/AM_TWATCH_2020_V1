@@ -35,4 +35,6 @@ void wifi_list_add(const char *ssid);
 void wifi_connect_status(bool result);
 void updateBatteryLevel();
 
+extern uint8_t g_blValue;
+
 #endif /*__GUI_H */

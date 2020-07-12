@@ -306,7 +306,7 @@ MenuBar::lv_menu_config_t _cfg[7] = {
     {.name = "WiFi",  .img = (void *) &wifi, .event_cb = wifi_event_cb},
     {.name = "Bluetooth",  .img = (void *) &bluetooth, /*.event_cb = bluetooth_event_cb*/},
     {.name = "SD Card",  .img = (void *) &sd,  /*.event_cb =sd_event_cb*/},
-    {.name = "Light",  .img = (void *) &light, /*.event_cb = light_event_cb*/},
+    {.name = "Light",  .img = (void *) &light, .event_cb = light_event_cb},
     {.name = "Setting",  .img = (void *) &setting, /*.event_cb = setting_event_cb */},
     {.name = "Modules",  .img = (void *) &modules, /*.event_cb = modules_event_cb */},
     {.name = "Camera",  .img = (void *) &CAMERA_PNG, /*.event_cb = camera_event_cb*/ }
@@ -1352,33 +1352,77 @@ static void setting_event_cb()
  *          ! LIGHT EVENT
  *
  */
-static void light_sw_event_cb(uint8_t index, bool en)
+// bl slider
+static void slider_event_cb(lv_obj_t * slider, lv_event_t event);
+static lv_obj_t * slider = NULL;
+static lv_obj_t * slider_label;
+uint8_t g_blValue = 20;
+#define ORIG_A 0
+#define ORIG_B 100
+#define DST_A  0
+#define DST_B  255
+
+static void slider_event_cb(lv_obj_t * slider, lv_event_t event)
 {
-    //Add lights that need to be controlled
+  int16_t slider_value;
+  
+    if(event == LV_EVENT_VALUE_CHANGED) 
+    {
+        int16_t slider_value = lv_slider_get_value(slider);
+
+        g_blValue = (uint8_t) (slider_value-ORIG_A)*(DST_B-DST_A)/(ORIG_B-ORIG_A)+ORIG_A;
+
+        /* max 3 bytes for number plus 1 null terminating byte */
+        static char buf[4]; 
+        snprintf(buf, 4, "%u", lv_slider_get_value(slider));
+        lv_label_set_text(slider_label, buf);
+    }
+}
+
+// exit btn 
+static lv_obj_t * exit_btn_lbl;
+static lv_obj_t * exit_btn;
+static void exit_from_light_settings(lv_obj_t * obj, lv_event_t event);
+
+static void exit_from_light_settings(lv_obj_t * obj, lv_event_t event)
+{
+    if(event == LV_EVENT_CLICKED) 
+    {
+
+        lv_obj_del(exit_btn);
+        exit_btn = nullptr;
+
+        lv_obj_del(slider);
+        slider = nullptr;
+
+        lv_obj_del(slider_label);
+        slider_label =  nullptr;
+
+        menuBars.hidden(false);
+    }
 }
 
 static void light_event_cb()
 {
-    const uint8_t cfg_count = 4;
-    Switch::switch_cfg_t cfg[cfg_count] = {
-        {"light1", light_sw_event_cb},
-        {"light2", light_sw_event_cb},
-        {"light3", light_sw_event_cb},
-        {"light4", light_sw_event_cb},
-    };
-    sw = new Switch;
-    sw->create(cfg, cfg_count, []() {
-        delete sw;
-        sw = nullptr;
-        menuBars.hidden(false);
-    });
+    /* Create a slider in the center of the display */
+    slider = lv_slider_create(lv_scr_act(), NULL);
+    lv_obj_set_width(slider, LV_DPI*2-50);
+    lv_obj_align(slider, NULL, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_event_cb(slider, slider_event_cb);
+    lv_slider_set_range(slider, 0, 100);
+    
+    /* Create a label below the slider */
+    slider_label = lv_label_create(lv_scr_act(), NULL);
+    lv_label_set_text(slider_label, "0");
+    lv_obj_set_auto_realign(slider_label, true);
+    lv_obj_align(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
-    sw->align(bar.self(), LV_ALIGN_OUT_BOTTOM_MID);
-
-    //Initialize switch status
-    for (int i = 0; i < cfg_count; i++) {
-        sw->setStatus(i, 0);
-    }
+    /* Exit button */
+    exit_btn = lv_btn_create(lv_scr_act(), NULL);
+    lv_obj_set_event_cb(exit_btn, exit_from_light_settings);
+    lv_obj_align(exit_btn, NULL, LV_ALIGN_OUT_BOTTOM_MID, 0, -50);
+    exit_btn_lbl = lv_label_create(exit_btn, NULL);
+    lv_label_set_text(exit_btn_lbl, "exit");
 }
 
 

@@ -227,14 +227,25 @@ void setup()
     //When the initialization is complete, turn on the backlight
     ttgo->openBL();
 
-    //Set BackLight to 5 improving battery perdormance
-    ttgo->setBrightness(5);
+
 }
 
 void loop()
 {
-    bool  rlst;
-    uint8_t data;
+bool  rlst;
+uint8_t data;
+static uint8_t CurrentBLvalue;
+
+
+    if(CurrentBLvalue != g_blValue)
+    {
+      // Set BackLight to 5 improving battery perdormance
+      ttgo->setBrightness(g_blValue);
+      // Change current BL value
+      CurrentBLvalue = g_blValue;
+    }
+
+    
     //! Fast response wake-up interrupt
     EventBits_t  bits = xEventGroupGetBits(isr_group);
     if (bits & WATCH_FLAG_SLEEP_EXIT) {
