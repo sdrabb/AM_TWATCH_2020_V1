@@ -18,7 +18,8 @@ Created by Lewis he on October 10, 2019.
 #include "FS.h"
 #include "SD.h"
 
-#define RTC_TIME_ZONE   "CET-2"//"CST-8"
+// italy TMZ https://remotemonitoringsystems.ca/time-zone-abbreviations.php
+#define RTC_TIME_ZONE   "CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00"
 
 
 LV_FONT_DECLARE(Geometr);
