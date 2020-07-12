@@ -15,6 +15,7 @@
 
 LV_FONT_DECLARE(Geometr);
 LV_FONT_DECLARE(Ubuntu);
+LV_IMG_DECLARE(black_bg);
 LV_IMG_DECLARE(bg);
 LV_IMG_DECLARE(bg1);
 LV_IMG_DECLARE(bg2);
@@ -337,11 +338,11 @@ void setupGui()
 
 
     //Create wallpaper
-    void *images[] = {(void *) &bg, (void *) &bg1, (void *) &bg2, (void *) &bg3 };
+    void *images[] = {(void *) &black_bg, (void *) &bg1, (void *) &bg2, (void *) &bg3 };
     lv_obj_t *scr = lv_scr_act();
     lv_obj_t *img_bin = lv_img_create(scr, NULL);  /*Create an image object*/
     srand((int)time(0));
-    int r = rand() % 4;
+    int r = 0;
     lv_img_set_src(img_bin, images[r]);
     lv_obj_align(img_bin, NULL, LV_ALIGN_CENTER, 0, 0);
 
