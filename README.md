@@ -5,7 +5,7 @@ This code is derived from the SimpleWatch example of Xinyuan LilyGO TTGO_TWatch 
 ![smartwatch](20200712_194937.jpg)
 
 ## NEW FEATURES
-* light sleep in low powe improving power consumption 
+* light sleep in low power improving power consumption 
 * backlight slider 
 * black background generated with (https://lvgl.io/tools/imageconverter) true color
 
